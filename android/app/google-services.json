@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "213005293117",
+    "project_id": "inplay-43123",
+    "storage_bucket": "inplay-43123.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:213005293117:android:e826e8570087485825bc54",
+        "android_client_info": {
+          "package_name": "com.company.inplay"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9bk0Z3TdOk1BoKI1kMRGlnu57NT0VEV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
