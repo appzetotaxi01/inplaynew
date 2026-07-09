@@ -37,6 +37,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
   bool _linkInterceptorInjected = false;
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
 
+  Timer? _adStalenessTimer;
+
   // Banner Ad (React Sync)
   final Map<String, BannerAd?> _bannerAds = {};
   final Map<String, bool> _adLoaded = {}; // per-page loaded flag, replaces the shared _isAdLoaded
@@ -84,7 +86,20 @@ class _WebViewScreenState extends State<WebViewScreen> {
     )..load();
   }
 
+  void _armStalenessWatchdog() {
+    _adStalenessTimer?.cancel();
+    _adStalenessTimer = Timer(const Duration(milliseconds: 2000), () {
+      if (mounted && _showAd) {
+        setState(() {
+          _showAd = false;
+          _adY = -1000;
+        });
+      }
+    });
+  }
+
   void _hideAdForPage(String page) {
+    _adStalenessTimer?.cancel();
     if (_activePage == page) {
       setState(() {
         _showAd = false;
@@ -791,6 +806,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   @override
   void dispose() {
+    _adStalenessTimer?.cancel();
     for (var ad in _bannerAds.values) {
       ad?.dispose();
     }
@@ -1376,6 +1392,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
                                       _adHeight = height; // expect 50
                                       _showAd = true;
                                     });
+                                    _armStalenessWatchdog();
                                   }
                                 },
                               );

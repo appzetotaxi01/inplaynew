@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">InPlay</string>
     <string name="facebook_app_id">2008331213157368</string>
-    <string name="facebook_client_token">c62267958d619ac84a5bcca3d2bdb4c8</string>
+    <string name="facebook_client_token">1c76f356d5aa6beedeee09081d1b699d</string>
     <string name="fb_login_protocol_scheme">fb2008331213157368</string>
 </resources>      
+
