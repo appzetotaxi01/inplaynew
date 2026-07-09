@@ -100,6 +100,40 @@ class PrefsUtil {
     await instance.remove(_keyAccessToken);
   }
 
+  // ==================== AD FREQUENCY CAPPING ====================
+
+  static const String _keyAdsShownDayCount = 'ads_shown_day_count';
+  static const String _keyAdsShownDayStamp = 'ads_shown_day_stamp';
+  static const String _keyLastAdShownAtMs = 'last_ad_shown_at_ms';
+
+  /// Number of interstitial ads shown on [getAdsShownDayStamp]'s date
+  static int getAdsShownDayCount() {
+    return instance.getInt(_keyAdsShownDayCount) ?? 0;
+  }
+
+  static Future<void> setAdsShownDayCount(int count) async {
+    await instance.setInt(_keyAdsShownDayCount, count);
+  }
+
+  /// Date the day-count was last reset for, formatted 'yyyy-MM-dd'. Compare
+  /// against today's date to detect day rollover before trusting the count.
+  static String? getAdsShownDayStamp() {
+    return instance.getString(_keyAdsShownDayStamp);
+  }
+
+  static Future<void> setAdsShownDayStamp(String stamp) async {
+    await instance.setString(_keyAdsShownDayStamp, stamp);
+  }
+
+  /// Epoch milliseconds of the last interstitial shown (persists across restarts)
+  static int? getLastAdShownAtMs() {
+    return instance.getInt(_keyLastAdShownAtMs);
+  }
+
+  static Future<void> setLastAdShownAtMs(int ms) async {
+    await instance.setInt(_keyLastAdShownAtMs, ms);
+  }
+
   // ==================== CLEAR ALL ====================
 
   /// Clear all preferences (for testing/debugging)

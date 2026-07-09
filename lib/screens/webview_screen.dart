@@ -17,7 +17,23 @@ import 'package:webview_master_app/utils/prefs_util.dart';
 import 'package:webview_master_app/utils/download_service.dart';
 import 'package:webview_master_app/widgets/offline_screen.dart';
 import 'package:webview_master_app/widgets/exit_dialog.dart';
+import 'package:webview_master_app/ads/ad_frequency_manager.dart';
+import 'package:webview_master_app/ads/interstitial_ad_controller.dart';
+import 'package:webview_master_app/services/ad_settings_service.dart';
 import 'package:share_plus/share_plus.dart';
+
+/// One rendered AdPlaceholder instance's position/visibility/native ad state.
+class _AdSlot {
+  _AdSlot(this.group);
+
+  final String group; // ad-unit lookup key, e.g. 'in-grid-banner', 'content-details'
+  double y = -1000;
+  double width = 320;
+  bool visible = false;
+  bool loaded = false;
+  BannerAd? bannerAd;
+  Timer? stalenessTimer;
+}
 
 /// WebView Screen - Main screen that loads the configured web URL
 class WebViewScreen extends StatefulWidget {
@@ -37,75 +53,88 @@ class _WebViewScreenState extends State<WebViewScreen> {
   bool _linkInterceptorInjected = false;
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
 
-  Timer? _adStalenessTimer;
-
-  // Banner Ad (React Sync)
-  final Map<String, BannerAd?> _bannerAds = {};
-  final Map<String, bool> _adLoaded = {}; // per-page loaded flag, replaces the shared _isAdLoaded
+  // Banner Ad (React Sync) — one entry per rendered AdPlaceholder instance,
+  // keyed by slotId. `group` resolves which AdMob ad unit a slot uses, since
+  // many slots (e.g. repeated in-grid ads) can share one ad-unit group while
+  // each still needs its own BannerAd/position/staleness-timer.
   final Map<String, String> _adUnitIds = {
     'inplay-cinema': 'ca-app-pub-9015405021941451/5625869957',
     'inplay-bhojpuri': 'ca-app-pub-9015405021941451/5625869957',
     'content-details': 'ca-app-pub-9015405021941451/5625869957',
+    'inplay-home': 'ca-app-pub-9015405021941451/5625869957',
+    'in-grid-banner': 'ca-app-pub-9015405021941451/5625869957',
   };
-  String? _activePage;
-  bool _showAd = false;
-  double _adY = -1000;
-  double _adWidth = 320;
-  double _adHeight = 50;
+  final Map<String, _AdSlot> _adSlots = {};
   double _currentScrollY = 0;
 
-  void _loadAndShowAd(String page) {
-    if (_bannerAds[page] != null) return; // already loading/loaded
+  void _loadAdForSlot(String slotId) {
+    final slot = _adSlots[slotId];
+    if (slot == null || slot.bannerAd != null) return; // gone or already loading/loaded
 
-    _adLoaded[page] = false;
-    _bannerAds[page] = BannerAd(
-      adUnitId: _adUnitIds[page] ?? 'ca-app-pub-9015405021941451/5625869957',
+    slot.loaded = false;
+    slot.bannerAd = BannerAd(
+      adUnitId: _adUnitIds[slot.group] ?? 'ca-app-pub-9015405021941451/5625869957',
       size: AdSize.banner, // 320x50
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (_) {
-          if (mounted) {
-            setState(() => _adLoaded[page] = true);
+          final s = _adSlots[slotId];
+          if (mounted && s != null) {
+            setState(() => s.loaded = true);
           }
         },
         onAdFailedToLoad: (ad, error) {
-          debugPrint('Ad failed for $page: $error');
+          debugPrint('Ad failed for $slotId: $error');
           ad.dispose();
-          if (mounted) {
+          final s = _adSlots[slotId];
+          if (s != null && mounted) {
             setState(() {
-              _bannerAds[page] = null;
-              _adLoaded[page] = false;
+              s.bannerAd = null;
+              s.loaded = false;
             });
           }
-          // Retry after a short delay instead of waiting for the user to leave and revisit the page
+          // Retry after a short delay instead of waiting for the user to leave and revisit the slot
           Future.delayed(const Duration(seconds: 30), () {
-            if (mounted && _activePage == page) _loadAndShowAd(page);
+            final retry = _adSlots[slotId];
+            if (mounted && retry != null && retry.visible) _loadAdForSlot(slotId);
           });
         },
       ),
     )..load();
   }
 
-  void _armStalenessWatchdog() {
-    _adStalenessTimer?.cancel();
-    _adStalenessTimer = Timer(const Duration(milliseconds: 2000), () {
-      if (mounted && _showAd) {
-        setState(() {
-          _showAd = false;
-          _adY = -1000;
-        });
+  void _armStalenessWatchdog(String slotId) {
+    final slot = _adSlots[slotId];
+    if (slot == null) return;
+    slot.stalenessTimer?.cancel();
+    // React sends a heartbeat every 1500ms while the ad slot is mounted and
+    // visible (not just on scroll/resize), so a static ad keeps renewing this
+    // timer. 4000ms gives buffer for a couple of missed beats without falsely
+    // hiding a still-valid ad. Per-slot so one slot going stale doesn't hide
+    // every other ad on screen.
+    slot.stalenessTimer = Timer(const Duration(milliseconds: 4000), () {
+      final s = _adSlots[slotId];
+      if (mounted && s != null && s.visible) {
+        setState(() => s.visible = false);
       }
     });
   }
 
-  void _hideAdForPage(String page) {
-    _adStalenessTimer?.cancel();
-    if (_activePage == page) {
-      setState(() {
-        _showAd = false;
-        _adY = -1000;
-      });
+  void _hideAdSlot(String slotId) {
+    final slot = _adSlots[slotId];
+    if (slot == null) return;
+    slot.stalenessTimer?.cancel();
+    if (mounted) {
+      setState(() => slot.visible = false);
     }
+  }
+
+  void _clearAllAdSlots() {
+    for (final slot in _adSlots.values) {
+      slot.stalenessTimer?.cancel();
+      slot.bannerAd?.dispose();
+    }
+    _adSlots.clear();
   }
 
   // Track pending download requests from API calls
@@ -806,9 +835,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   @override
   void dispose() {
-    _adStalenessTimer?.cancel();
-    for (var ad in _bannerAds.values) {
-      ad?.dispose();
+    for (final slot in _adSlots.values) {
+      slot.stalenessTimer?.cancel();
+      slot.bannerAd?.dispose();
     }
     _connectivitySubscription?.cancel();
     super.dispose();
@@ -1365,41 +1394,92 @@ class _WebViewScreenState extends State<WebViewScreen> {
                                   if (args.isEmpty || args[0] is! Map) return;
                                   final data = Map<String, dynamic>.from(args[0] as Map);
                                   final page = data['page'] as String?;
+                                  // slotId uniquely identifies this rendered instance; falls back to
+                                  // page for the original single-slot pages sending no slotId.
+                                  final slotId = (data['slotId'] as String?) ?? page;
                                   final y = (data['y'] as num?)?.toDouble() ?? -1000;
                                   final width = (data['width'] as num?)?.toDouble();
-                                  final height = (data['height'] as num?)?.toDouble() ?? 50;
                                   final visible = data['visible'] == true;
-                                  
-                                  debugPrint('[AdSync] page=$page y=$y w=$width h=$height visible=$visible');
 
-                                  if (page == null) return;
-                                  
+                                  debugPrint('[AdSync] slotId=$slotId group=$page y=$y w=$width visible=$visible');
+
+                                  if (page == null || slotId == null) return;
+
                                   if (!visible || y < -50) {
-                                    _hideAdForPage(page);
+                                    _hideAdSlot(slotId);
                                     return;
                                   }
-                                  
-                                  // Retry on page change OR if this page's ad isn't loaded/loading (covers past failures)
-                                  if (_activePage != page || _bannerAds[page] == null) {
-                                    _loadAndShowAd(page);
+
+                                  final isNewSlot = !_adSlots.containsKey(slotId);
+                                  if (isNewSlot) {
+                                    _adSlots[slotId] = _AdSlot(page);
                                   }
-                                  
+                                  final slot = _adSlots[slotId]!;
+
+                                  // Retry on first sight of this slot OR if its ad isn't loaded/loading
+                                  // (covers past failures) — never for slots that are still mid-load.
+                                  if (isNewSlot || slot.bannerAd == null) {
+                                    _loadAdForSlot(slotId);
+                                  }
+
                                   if (mounted) {
                                     setState(() {
-                                      _activePage = page;
-                                      _adY = y;
-                                      _adWidth = width ?? MediaQuery.of(context).size.width;
-                                      _adHeight = height; // expect 50
-                                      _showAd = true;
+                                      slot.y = y;
+                                      slot.width = width ?? MediaQuery.of(context).size.width;
+                                      slot.visible = true;
                                     });
-                                    _armStalenessWatchdog();
+                                    _armStalenessWatchdog(slotId);
                                   }
                                 },
                               );
 
+                              controller.addJavaScriptHandler(
+                                handlerName: 'userPremiumStatus',
+                                callback: (args) {
+                                  if (args.isEmpty || args[0] is! Map) return;
+                                  final data = Map<String, dynamic>.from(args[0] as Map);
+                                  AdFrequencyManager.instance.setPremium(data['isPremium'] == true);
+                                },
+                              );
+
+                              controller.addJavaScriptHandler(
+                                handlerName: 'adTriggerEvent',
+                                callback: (args) async {
+                                  if (args.isEmpty || args[0] is! Map) return;
+                                  final data = Map<String, dynamic>.from(args[0] as Map);
+                                  final surface = data['surface'] as String?;
+                                  final event = data['event'] as String?;
+                                  if (surface == null || event == null) return;
+
+                                  final shouldShow = await AdFrequencyManager.instance
+                                      .shouldShowAd(surface: surface, event: event);
+                                  if (!shouldShow) return;
+
+                                  final config = AdFrequencyManager.instance.config;
+                                  final shown = await InterstitialAdController.instance.showIfReady(config);
+                                  if (shown) {
+                                    await AdFrequencyManager.instance.recordAdShown();
+                                  }
+                                },
+                              );
+
+                              // Fetch admin-configured ad settings once per app session and
+                              // preload the first interstitial so it's ready by the time a
+                              // trigger event (video_end/episode_change/shorts swipe) fires.
+                              AdSettingsService().fetchAdConfig().then((config) {
+                                AdFrequencyManager.instance.init(config);
+                                InterstitialAdController.instance.preload(config);
+                              });
+
                               await _saveFCMToken();
                             },
                             onLoadStart: (controller, url) {
+                              // Any real navigation/reload (including pull-to-refresh)
+                              // means the current page's React state is gone, so every
+                              // slot's old position is no longer valid. Hide+dispose all
+                              // of them immediately instead of waiting for each slot's
+                              // staleness watchdog to expire independently.
+                              _clearAllAdSlots();
                               setState(() {
                                 _isLoading = true;
                                 _phoneListenerInjected = false;
@@ -1787,23 +1867,22 @@ class _WebViewScreenState extends State<WebViewScreen> {
                                 ),
                               ),
                             ),
-                          if (_showAd &&
-                              _activePage != null &&
-                              (_adLoaded[_activePage] ?? false) &&
-                              _bannerAds[_activePage] != null)
-                            Positioned(
-                              top: _adY, // FROM REACT
-                              left: 0,
-                              right: 0,
-                              height: 50, // MUST match React NATIVE_BANNER_HEIGHT
-                              child: Center(
-                                child: SizedBox(
-                                  width: _adWidth,
-                                  height: 50,
-                                  child: AdWidget(ad: _bannerAds[_activePage]!),
-                                ),
-                              ),
-                            ),
+                          ..._adSlots.entries
+                              .where((e) => e.value.visible && e.value.loaded && e.value.bannerAd != null)
+                              .map((e) => Positioned(
+                                    key: ValueKey('ad-slot-${e.key}'),
+                                    top: e.value.y, // FROM REACT
+                                    left: 0,
+                                    right: 0,
+                                    height: 50, // MUST match React NATIVE_BANNER_HEIGHT
+                                    child: Center(
+                                      child: SizedBox(
+                                        width: e.value.width,
+                                        height: 50,
+                                        child: AdWidget(ad: e.value.bannerAd!),
+                                      ),
+                                    ),
+                                  )),
                         ],
                       )
                     : OfflineScreen(

@@ -71,7 +71,33 @@
 	<!-- ==================== NOTIFICATION PERMISSION ==================== -->
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>This app needs notification permission to send you important updates.</string>
-	
+
+	<!-- ==================== ADMOB ==================== -->
+	<!-- TODO: paste your real iOS AdMob App ID here before building for iOS —
+	     without it the Google Mobile Ads SDK will not initialize and no ads
+	     (including the existing banner slots) will show on iOS at all.
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY</string>
+	-->
+
+	<!-- App Tracking Transparency prompt text (required for personalized ads / UMP consent) -->
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This identifier will be used to deliver personalized ads to you.</string>
+
+	<!-- SKAdNetwork IDs for ad-network attribution. This is only Google's own
+	     network ID — the full recommended list (60+ entries, covers AdMob's
+	     mediation partners) should be copied from Google's current official
+	     list at https://developers.google.com/admob/ios/mediation before
+	     going live, since it's updated periodically and accuracy matters for
+	     attribution reporting. -->
+	<key>SKAdNetworkItems</key>
+	<array>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>cstr6suwn9.skadnetwork</string>
+		</dict>
+	</array>
+
 	<!-- ==================== WEBVIEW SETTINGS ==================== -->
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
