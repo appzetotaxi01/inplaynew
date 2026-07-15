@@ -72,8 +72,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
     if (slot == null || slot.bannerAd != null) return; // gone or already loading/loaded
 
     slot.loaded = false;
+    final adUnitId = Platform.isIOS
+        ? 'ca-app-pub-9015405021941451/6702493399'
+        : (_adUnitIds[slot.group] ?? 'ca-app-pub-9015405021941451/5625869957');
+
     slot.bannerAd = BannerAd(
-      adUnitId: _adUnitIds[slot.group] ?? 'ca-app-pub-9015405021941451/5625869957',
+      adUnitId: adUnitId,
       size: AdSize.banner, // 320x50
       request: const AdRequest(),
       listener: BannerAdListener(

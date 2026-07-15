@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Rukko Hub</string>
+	<string>Inplay</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Rukko Hub</string>
+	<string>Inplay</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -45,59 +45,65 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	
-	<!-- ==================== CAMERA PERMISSION ==================== -->
-	<key>NSCameraUsageDescription</key>
-	<string>This app needs camera access to capture photos and videos for the web application.</string>
-	
-	<!-- ==================== MICROPHONE PERMISSION ==================== -->
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This app needs microphone access to record audio for the web application.</string>
-	
-	<!-- ==================== LOCATION PERMISSIONS ==================== -->
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs location access to provide location-based services.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs location access to provide location-based services.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs location access to provide location-based services.</string>
-	
-	<!-- ==================== PHOTO LIBRARY PERMISSIONS ==================== -->
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs access to your photo library to upload photos.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>This app needs permission to save photos to your library.</string>
-	
-	<!-- ==================== NOTIFICATION PERMISSION ==================== -->
-	<key>NSUserNotificationsUsageDescription</key>
-	<string>This app needs notification permission to send you important updates.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 
-	<!-- ==================== ADMOB ==================== -->
-	<!-- TODO: paste your real iOS AdMob App ID here before building for iOS —
-	     without it the Google Mobile Ads SDK will not initialize and no ads
-	     (including the existing banner slots) will show on iOS at all.
-	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY</string>
-	-->
+   	<!-- ==================== Facebook PERMISSION ==================== -->
 
-	<!-- App Tracking Transparency prompt text (required for personalized ads / UMP consent) -->
-	<key>NSUserTrackingUsageDescription</key>
-	<string>This identifier will be used to deliver personalized ads to you.</string>
-
-	<!-- SKAdNetwork IDs for ad-network attribution. This is only Google's own
-	     network ID — the full recommended list (60+ entries, covers AdMob's
-	     mediation partners) should be copied from Google's current official
-	     list at https://developers.google.com/admob/ios/mediation before
-	     going live, since it's updated periodically and accuracy matters for
-	     attribution reporting. -->
-	<key>SKAdNetworkItems</key>
+	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-			<key>SKAdNetworkIdentifier</key>
-			<string>cstr6suwn9.skadnetwork</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb2008331213157368</string>
+			</array>
 		</dict>
 	</array>
 
+	<key>FacebookAppID</key>
+	<string>2008331213157368</string>
+
+	<key>FacebookClientToken</key>
+	<string>1c76f356d5aa6beedeee09081d1b699d</string>
+
+	<key>FacebookDisplayName</key>
+	<string>InPlay</string>
+
+	<key>FacebookAutoLogAppEventsEnabled</key>
+    <true/>
+
+    <key>FacebookAdvertiserIDCollectionEnabled</key>
+    <true/>
+
+	
+	<!-- ==================== CAMERA PERMISSION ==================== -->
+	<key>NSCameraUsageDescription</key>
+	<string>Inplay requires camera access to allow you to capture and upload profile photos and securely verify your identity for account security.</string>
+	
+	<!-- ==================== MICROPHONE PERMISSION ==================== -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Inplay requires microphone access to enable voice search features and to record audio when capturing video content within the app.</string>
+	
+	<!-- ==================== LOCATION PERMISSIONS ==================== -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Inplay uses your location to provide accurate local sports updates, verify regional eligibility, and offer location-based services tailored to your area.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Inplay uses your location to provide real-time updates for local sports events and ensure you receive relevant regional notifications even when the app is in the background.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Inplay uses your location to provide accurate sports news, verify regional eligibility, and send timely updates about local events in your area.</string>
+	
+	<!-- ==================== PHOTO LIBRARY PERMISSIONS ==================== -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Inplay requires access to your photo library to allow you to select and upload profile pictures and share sports-related media from your gallery.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Inplay requires permission to save captured photos and downloaded sports content directly to your photo library.</string>
+	
+	<!-- ==================== NOTIFICATION PERMISSION ==================== -->
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Inplay requests permission to send you real-time notifications about match scores, account updates, and exclusive sports events.</string>
+	
 	<!-- ==================== WEBVIEW SETTINGS ==================== -->
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
@@ -151,5 +157,9 @@
 		<string>paytmmp</string>
 		<string>upi</string>
 	</array>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<string>YES</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-9015405021941451~3880778797</string>
 </dict>
 </plist>
