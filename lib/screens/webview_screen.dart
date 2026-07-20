@@ -41,9 +41,15 @@ class _WebViewScreenState extends State<WebViewScreen> {
   final Map<String, BannerAd?> _bannerAds = {};
   final Map<String, bool> _adLoaded = {}; // per-page loaded flag, replaces the shared _isAdLoaded
   final Map<String, String> _adUnitIds = {
-    'inplay-cinema': 'ca-app-pub-9015405021941451/5625869957',
-    'inplay-bhojpuri': 'ca-app-pub-9015405021941451/5625869957',
-    'content-details': 'ca-app-pub-9015405021941451/5625869957',
+    'inplay-cinema': Platform.isIOS
+        ? 'ca-app-pub-9015405021941451/6702492339'
+        : 'ca-app-pub-9015405021941451/5625869957',
+    'inplay-bhojpuri': Platform.isIOS
+        ? 'ca-app-pub-9015405021941451/6702492339'
+        : 'ca-app-pub-9015405021941451/5625869957',
+    'content-details': Platform.isIOS
+        ? 'ca-app-pub-9015405021941451/6702492339'
+        : 'ca-app-pub-9015405021941451/5625869957',
   };
   String? _activePage;
   bool _showAd = false;
@@ -57,7 +63,10 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
     _adLoaded[page] = false;
     _bannerAds[page] = BannerAd(
-      adUnitId: _adUnitIds[page] ?? 'ca-app-pub-9015405021941451/5625869957',
+      adUnitId: _adUnitIds[page] ??
+          (Platform.isIOS
+              ? 'ca-app-pub-9015405021941451/6702492339'
+              : 'ca-app-pub-9015405021941451/5625869957'),
       size: AdSize.banner, // 320x50
       request: const AdRequest(),
       listener: BannerAdListener(
