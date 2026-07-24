@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -20,10 +22,96 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb2008331213157368</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FacebookAdvertiserIDCollectionEnabled</key>
+	<true/>
+	<key>FacebookAppID</key>
+	<string>2008331213157368</string>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<true/>
+	<key>FacebookClientToken</key>
+	<string>1c76f356d5aa6beedeee09081d1b699d</string>
+	<key>FacebookDisplayName</key>
+	<string>InPlay</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<string>YES</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-9015405021941451~3880778797</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+		<string>telprompt</string>
+		<string>mailto</string>
+		<string>sms</string>
+		<string>whatsapp</string>
+		<string>whatsapp-api</string>
+		<string>fb</string>
+		<string>fbapi</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+		<string>twitter</string>
+		<string>instagram</string>
+		<string>instagram-stories</string>
+		<string>linkedin</string>
+		<string>youtube</string>
+		<string>snapchat</string>
+		<string>pinterest</string>
+		<string>tg</string>
+		<string>telegram</string>
+		<string>viber</string>
+		<string>skype</string>
+		<string>line</string>
+		<string>wechat</string>
+		<string>weixin</string>
+		<string>itms-apps</string>
+		<string>itms-appss</string>
+		<string>itms</string>
+		<string>phonepe</string>
+		<string>tez</string>
+		<string>paytmmp</string>
+		<string>upi</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Inplay requires camera access to allow you to capture and upload profile photos and securely verify your identity for account security.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Inplay uses your location to provide accurate sports news, verify regional eligibility, and send timely updates about local events in your area.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Inplay uses your location to provide real-time updates for local sports events and ensure you receive relevant regional notifications even when the app is in the background.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Inplay uses your location to provide accurate local sports updates, verify regional eligibility, and offer location-based services tailored to your area.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Inplay requires microphone access to enable voice search features and to record audio when capturing video content within the app.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Inplay requires permission to save captured photos and downloaded sports content directly to your photo library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Inplay requires access to your photo library to allow you to select and upload profile pictures and share sports-related media from your gallery.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Inplay requests permission to send you real-time notifications about match scores, account updates, and exclusive sports events.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This identifier will be used to analyze app usage and verify debug events in the Meta Event Manager.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>processing</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -41,125 +129,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>remote-notification</string>
-	</array>
-
-   	<!-- ==================== Facebook PERMISSION ==================== -->
-
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>fb2008331213157368</string>
-			</array>
-		</dict>
-	</array>
-
-	<key>FacebookAppID</key>
-	<string>2008331213157368</string>
-
-	<key>FacebookClientToken</key>
-	<string>1c76f356d5aa6beedeee09081d1b699d</string>
-
-	<key>FacebookDisplayName</key>
-	<string>InPlay</string>
-
-	<key>FacebookAutoLogAppEventsEnabled</key>
-    <true/>
-
-    <key>FacebookAdvertiserIDCollectionEnabled</key>
-    <true/>
-
-	
-	<!-- ==================== CAMERA PERMISSION ==================== -->
-	<key>NSCameraUsageDescription</key>
-	<string>Inplay requires camera access to allow you to capture and upload profile photos and securely verify your identity for account security.</string>
-	
-	<!-- ==================== MICROPHONE PERMISSION ==================== -->
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Inplay requires microphone access to enable voice search features and to record audio when capturing video content within the app.</string>
-	
-	<!-- ==================== LOCATION PERMISSIONS ==================== -->
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Inplay uses your location to provide accurate local sports updates, verify regional eligibility, and offer location-based services tailored to your area.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Inplay uses your location to provide real-time updates for local sports events and ensure you receive relevant regional notifications even when the app is in the background.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Inplay uses your location to provide accurate sports news, verify regional eligibility, and send timely updates about local events in your area.</string>
-	
-	<!-- ==================== PHOTO LIBRARY PERMISSIONS ==================== -->
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Inplay requires access to your photo library to allow you to select and upload profile pictures and share sports-related media from your gallery.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Inplay requires permission to save captured photos and downloaded sports content directly to your photo library.</string>
-	
-	<!-- ==================== NOTIFICATION PERMISSION ==================== -->
-	<key>NSUserNotificationsUsageDescription</key>
-	<string>Inplay requests permission to send you real-time notifications about match scores, account updates, and exclusive sports events.</string>
-	
-	<!-- ==================== WEBVIEW SETTINGS ==================== -->
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
-	
-	<!-- Allow HTTP connections (for development only - remove in production) -->
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-	</dict>
-	
-	<!-- ==================== URL SCHEME QUERIES ==================== -->
-	<!-- Required for iOS to query and open other apps via URL schemes -->
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<!-- Phone and Communication -->
-		<string>tel</string>
-		<string>telprompt</string>
-		<string>mailto</string>
-		<string>sms</string>
-		<!-- WhatsApp -->
-		<string>whatsapp</string>
-		<string>whatsapp-api</string>
-		<!-- Social Media -->
-		<string>fb</string>
-		<string>fbapi</string>
-		<string>fbauth2</string>
-		<string>fbshareextension</string>
-		<string>twitter</string>
-		<string>instagram</string>
-		<string>instagram-stories</string>
-		<string>linkedin</string>
-		<string>youtube</string>
-		<string>snapchat</string>
-		<string>pinterest</string>
-		<!-- Messaging -->
-		<string>tg</string>
-		<string>telegram</string>
-		<string>viber</string>
-		<string>skype</string>
-		<string>line</string>
-		<string>wechat</string>
-		<string>weixin</string>
-		<!-- App Store -->
-		<string>itms-apps</string>
-		<string>itms-appss</string>
-		<string>itms</string>
-		<!-- UPI Payment Apps -->
-		<string>phonepe</string>
-		<string>tez</string>
-		<string>paytmmp</string>
-		<string>upi</string>
-	</array>
-	<key>FirebaseAppDelegateProxyEnabled</key>
-	<string>YES</string>
-	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-9015405021941451~3880778797</string>
 </dict>
 </plist>

@@ -10,11 +10,15 @@ import 'package:webview_master_app/utils/prefs_util.dart';
 import 'package:webview_master_app/utils/fcm_background_handler.dart';
 import 'package:webview_master_app/utils/notification_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:webview_master_app/utils/analytics_service.dart';
 
 /// Main entry point of the application
 void main() async {
   // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize SharedPreferences
+  await PrefsUtil.init();
 
   // Initialize Google Mobile Ads SDK
   MobileAds.instance.initialize();
@@ -23,6 +27,14 @@ void main() async {
   try {
     await Firebase.initializeApp();
     debugPrint('✅ Firebase initialized');
+
+    // Initialize Analytics Service (logs standard app open & test event to both Meta and Firebase)
+    // Run asynchronously to allow UI to build first (required for iOS ATT popup)
+    AnalyticsService.instance.initialize().then((_) {
+      debugPrint('✅ Analytics Service initialized');
+    }).catchError((e) {
+      debugPrint('❌ Error initializing Analytics: $e');
+    });
 
     // Register background message handler (for notifications when app is in background/terminated)
     // Foreground notifications are handled by NotificationService.onMessage listener
@@ -34,9 +46,6 @@ void main() async {
     debugPrint('❌ Error initializing Firebase: $e');
     debugPrint('⚠️ Make sure google-services.json is added to android/app/');
   }
-
-  // Initialize SharedPreferences
-  await PrefsUtil.init();
 
   // Initialize Notification Service early
   // This sets up foreground notification handler (FirebaseMessaging.onMessage)

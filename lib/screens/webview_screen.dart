@@ -21,6 +21,7 @@ import 'package:webview_master_app/ads/ad_frequency_manager.dart';
 import 'package:webview_master_app/ads/interstitial_ad_controller.dart';
 import 'package:webview_master_app/services/ad_settings_service.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:webview_master_app/utils/analytics_service.dart';
 
 /// One rendered AdPlaceholder instance's position/visibility/native ad state.
 class _AdSlot {
@@ -1463,6 +1464,35 @@ class _WebViewScreenState extends State<WebViewScreen> {
                                   final shown = await InterstitialAdController.instance.showIfReady(config);
                                   if (shown) {
                                     await AdFrequencyManager.instance.recordAdShown();
+                                  }
+                                },
+                              );
+
+                              controller.addJavaScriptHandler(
+                                handlerName: 'logAnalyticsEvent',
+                                callback: (args) async {
+                                  if (args.isEmpty || args[0] is! Map) return;
+                                  try {
+                                    final data = Map<String, dynamic>.from(args[0] as Map);
+                                    final String? eventName = data['name'] as String?;
+                                    if (eventName == null || eventName.isEmpty) return;
+                                    
+                                    final Map<String, dynamic>? params = data['parameters'] != null
+                                        ? Map<String, dynamic>.from(data['parameters'] as Map)
+                                        : null;
+
+                                    Map<String, Object>? castedParams;
+                                    if (params != null) {
+                                      castedParams = params.map((key, value) => MapEntry(key, value as Object));
+                                    }
+
+                                    await AnalyticsService.instance.logEvent(
+                                      name: eventName,
+                                      parameters: castedParams,
+                                    );
+                                    debugPrint('Logged native analytics event: $eventName with $castedParams');
+                                  } catch (e) {
+                                    debugPrint('Error logging analytics event from webview: $e');
                                   }
                                 },
                               );
